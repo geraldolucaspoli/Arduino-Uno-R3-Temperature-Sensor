@@ -1,0 +1,41 @@
+package lerTemperaturaCom;
+
+import jssc.SerialPort;
+import jssc.SerialPortException;
+import jssc.SerialPortList;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Date;
+
+public class PortReader {
+
+	public static void main(String[] args) throws SerialPortException, IOException {
+		String[] portNames = SerialPortList.getPortNames();
+		String portadoCaralho = null;
+		for (String portName : portNames) {
+			System.out.println(portName);
+			portadoCaralho = portName;
+		}
+
+		SerialPort serialPort = new SerialPort(portadoCaralho);
+		int el = 2;
+
+		while (el <= 10) {
+			System.out.println("Port opened: " + serialPort.openPort());
+			System.out.println("Params setted: " + serialPort.setParams(9600, 8, 1, 0));
+			while (el <= 10) {
+				//System.out.println(new String(serialPort.readBytes(35))); //Teste no Display
+				
+				FileWriter arq = new FileWriter("C:\\TempAndUmid.txt", true);
+				PrintWriter gravarArq = new PrintWriter(arq);
+				gravarArq.println("###################################");
+				gravarArq.println(new String(serialPort.readBytes(35)));
+				gravarArq.println(new Date(System.currentTimeMillis()));
+				arq.close();
+			}
+			// System.out.println("Port closed: " + serialPort.closePort());
+		}
+
+	}
+}
