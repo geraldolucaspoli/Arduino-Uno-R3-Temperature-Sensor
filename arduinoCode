@@ -1,0 +1,76 @@
+
+#include <DHT.h>
+#include <LiquidCrystal.h> //Carrega a biblioteca LCD
+
+#define DHTPIN A5//Define a ligação ao pino de dados do sensor
+
+#define DHTTYPE DHT11//Define o tipo de sensor DHT utilizado
+DHT dht(DHTPIN, DHTTYPE);
+ 
+//Define os pinos que serão ligados ao LCD
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+ 
+//Array simbolo grau
+byte grau[8] ={ B00001100,
+                B00010010,
+                B00010010,
+                B00001100,
+                B00000000,
+                B00000000,
+                B00000000,
+                B00000000,};
+ 
+void setup()
+{
+Serial.begin(9600); //Inicializa a serial
+lcd.begin(16,2); //Inicializa LCD
+lcd.clear(); //Limpa o LCD
+//Cria o caractere customizado com o simbolo do grau
+lcd.createChar(0, grau);
+pinMode(10, OUTPUT); //LED ALERTA
+pinMode(13, OUTPUT); //LED OK
+} 
+void loop()
+{
+float h = dht.readHumidity(); //Le o valor da umidade
+float t = dht.readTemperature(); //Le o valor da temperatura
+lcd.setCursor(0,0);
+lcd.print("Temp : ");
+lcd.print(" ");
+lcd.setCursor(7,0);
+lcd.print(t,1);
+lcd.setCursor(12,0);
+ 
+//Mostra o simbolo do grau formado pelo array
+lcd.write((byte)0);
+lcd.setCursor(0,1);
+lcd.print("Umid : ");
+lcd.print(" ");
+lcd.setCursor(7,1);
+lcd.print(h,1);
+lcd.setCursor(12,1);
+lcd.print("%");
+
+float monitorTemp = 26 ;
+if (t <= monitorTemp)
+{
+   digitalWrite (13, HIGH); //LED OK
+   digitalWrite (10, LOW); //LED ALERTA
+} 
+else // caso contrário, isto é input > 500
+{
+   digitalWrite (10, HIGH); //LED ALERTA
+   delay (10);
+   digitalWrite (13, LOW); //LED OK
+}
+String displayNameTemperatura = "temperatura:";
+String displayNameHumidade = "umidade:";
+String divDisplay = " | ";
+int ponteiro = 1;
+if(ponteiro = 1){
+Serial.println((displayNameTemperatura)+(t)+(divDisplay)+(displayNameHumidade)+(h)+(divDisplay));
+
+}
+
+delay(5000);//Intervalo re endado para leitura do sensor
+}
